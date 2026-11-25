@@ -58,21 +58,11 @@ The EC2 instance uses the IAM role to read `index.html` from S3, so no access ke
 - Created the `capstone` route table, associated with the 3 subnets
 - Attached internet gateway `igw-075eaa2f8491b7557` to the VPC
 
-| VPC | Subnets |
-| --- | --- |
-| ![VPC](images/02-vpc.png) | ![Subnets](images/03-subnets.png) |
-
-![Route table](images/04-route-table.png)
-![Internet gateway](images/05-internet-gateway.png)
-
 ### 2. EC2 instance and security group
 - Launched `capstone-web-1` (t3.micro, Amazon Linux 2023) in `capstone-vpc`, public IP `51.20.183.97`, **3/3 status checks passed**
 - Security group `capstone-web-sg`:
   - Inbound: HTTP (80) and SSH (22)
   - Outbound: all traffic allowed
-
-![EC2 running](images/01-ec2-instance-running.png)
-![Security group rules](images/06-security-group-rules.png)
 
 ### 3. Apache web server
 ```bash
@@ -87,24 +77,15 @@ Apache is **enabled, active (running)** and listening on port 80.
 - Attached it to the instance so EC2 can access S3 without stored credentials
 - IAM users in the account include `Teammate1` and `Teammate2`
 
-![IAM role](images/10-iam-role-ec2-s3.png)
-![IAM users](images/09-iam-users.png)
-
 ### 5. S3 bucket and file upload
 - Created bucket `capstone-s3-arcade` in `eu-north-1`
 - Uploaded `index.html` (3.0 KB)
-
-![S3 buckets](images/13-s3-buckets.png)
-![S3 objects](images/14-s3-objects.png)
-![S3 object details](images/15-s3-object-details.png)
 
 ### 6. EC2 pulls the game from S3 using the role
 ```bash
 aws s3 ls
 sudo aws s3 cp s3://capstone-s3-arcade/index.html /var/www/html/index.html
 ```
-
-![Apache and S3 CLI](images/07-apache-and-s3-cli.png)
 
 ### 7. EBS volume
 - Created and attached a 2 GiB EBS volume, mounted at `/data`
@@ -116,15 +97,10 @@ df -h /data
 cat /data/test.txt   # EBS volume working
 ```
 
-![lsblk](images/11-ebs-lsblk.png)
-![EBS mounted](images/12-ebs-mounted-test.png)
-
 ### 8. S3 static website hosting
 Static website hosting is enabled on `capstone-s3-arcade`.
 
 Endpoint: `http://capstone-s3-arcade.s3-website.eu-north-1.amazonaws.com`
-
-![S3 static hosting](images/16-s3-static-website-hosting.png)
 
 ## 🎮 The Website
 
@@ -133,13 +109,7 @@ A single `index.html` using HTML, CSS and JavaScript:
 - **Target Tap**: hit as many moving targets as possible in 20 seconds
 - **Tic Tac Toe**: two players take turns, with win and draw detection
 
-![Game source](images/08-game-source-code.png)
-
-### Live on EC2 (`http://51.20.183.97`)
-
-| Target Tap | Tic Tac Toe |
-| --- | --- |
-| <img src="images/17-live-target-tap.jpeg" width="300"> | <img src="images/18-live-tic-tac-toe.jpeg" width="300"> |
+The game is also live on the EC2 public IP: `http://51.20.183.97`
 
 ## 🧩 Challenges and Fixes
 
@@ -155,7 +125,6 @@ A single `index.html` using HTML, CSS and JavaScript:
 - Give the IAM role access to one bucket only (least privilege) instead of `AmazonS3FullAccess`
 - Add HTTPS using CloudFront
 - Use a load balancer and a second Availability Zone
-- Release the public IP and stop unused resources to avoid charges
 
 ## 📚 What We Learned
 
@@ -166,9 +135,8 @@ How compute (EC2), storage (S3, EBS), networking (VPC) and permissions (IAM) wor
 ```
 .
 ├── README.md
-├── index.html            # the game (download it from your S3 bucket)
-├── Cloud_Arcade_Group53.pptx
-└── images/               # project screenshots
+├── index.html
+└── Cloud_Arcade_Group53.pptx
 ```
 
 ---
